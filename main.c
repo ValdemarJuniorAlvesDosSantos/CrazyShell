@@ -10,7 +10,7 @@
  *
  * Created on 23 de Abril de 2018, 12:02
  */
-
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,7 +41,7 @@ int daExec(char** recebido,int b){
             return execl(recebido[0],recebido[0],recebido[1],recebido[2],NULL);
         }
         case 3:{
-            execlp(recebido[0],recebido[0],recebido[1],recebido[2],recebido[3],recebido[4],NULL);
+            execlp(recebido[0],recebido[0],recebido[1],recebido[2],recebido[3],NULL);
             return execl(recebido[0],recebido[0],recebido[1],recebido[2],recebido[3],NULL);
         }
         case 4:{
@@ -53,7 +53,16 @@ int daExec(char** recebido,int b){
     }
     
 }
-
+void trataWait(){
+    int status;
+    int a;
+    pid_t childpid;
+    while ((childpid = waitpid(-1, &status,WNOHANG))){
+        if ((childpid == -1))
+            break;
+        printf("%d",childpid);
+    }
+}
 int main(int argc, char** argv) {
     int pai= getpid();
     fork();
@@ -102,10 +111,11 @@ int main(int argc, char** argv) {
                     return 0;
                 }
                 if (!strcmp(recebido[0],"wait")){
-                      
+                    trataWait();
                 }else{
                     filho = fork();
-                    int h = wait(&h);
+                    int status;
+                    int h = waitpid(filho,&status,WUNTRACED);
                 }
         }
         
