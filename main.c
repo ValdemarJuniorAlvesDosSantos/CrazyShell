@@ -60,8 +60,17 @@ void trataWait(){
     while ((childpid = waitpid(-1, &status,WNOHANG))){
         if ((childpid == -1))
             break;
-        printf("%d",childpid);
+        printf("o processo %d ",childpid);
+        if (WIFEXITED(status)){
+            printf("morreu de morte morrida(exit)\n");
+        }else{
+            printf("morreu de morte matada(signal)\n");
+        }
     }
+    printf("Todos os filhos estao descançando em paz\n");
+}
+void trataExit(){
+
 }
 int main(int argc, char** argv) {
     int pai= getpid();
