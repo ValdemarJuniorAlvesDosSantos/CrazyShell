@@ -16,6 +16,7 @@
 #include <string.h>
 #include <unistd.h>     // For the syscall functions.
 #include <sys/wait.h>
+#include <signal.h>
 /*
  *
  */
@@ -70,7 +71,12 @@ void trataWait(){
     printf("Todos os filhos estao descançando em paz\n");
 }
 void trataExit(){
-
+    int a;
+    int status;
+    while (a=wait(&status)!=-1){
+        printf("%d",a);
+    }
+    printf("Fim da shell.\n");
 }
 int main(int argc, char** argv) {
     int pai= getpid();
@@ -116,7 +122,9 @@ int main(int argc, char** argv) {
                 recebido[i][j]='\0';
                 
                 if (!strcmp(recebido[0],"exit")){
-                   //libera(recebido);
+                   
+                   trataExit();
+                   
                     return 0;
                 }
                 if (!strcmp(recebido[0],"wait")){
@@ -142,7 +150,9 @@ int main(int argc, char** argv) {
         
         if (neto==0){
             int a;
-            daemon(0,0);
+            if (setsid()==-1){
+                printf("o processo neto nao foi pra background");
+            }
             a = daExec(recebido,i);
             
             exit(0);
