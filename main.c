@@ -10,6 +10,7 @@
  *
  * Created on 23 de Abril de 2018, 12:02
  */
+#include <signal.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,6 +21,20 @@
 /*
  *
  */
+
+ int PID_filho = 0;
+
+ void CtrlC(int sig){
+     signal(SIGINT, SIG_IGN);
+     char c;
+     printf("Não adianta me enviar um sinal por Ctrl-c, não vou morrer! Você quer suspender meu filho que está rodando em foreground? s/n:\n");
+     c = getchar();
+     if (c == 'S' || c == 's'){
+    //      printf("entrou aq");
+        kill(PID_filho, SIGSTOP);
+     }
+ }
+
 void libera(char** recebido){
     for (int o=0;o<6;o++){
         free(recebido[o]);
@@ -79,6 +94,7 @@ void trataExit(){
     printf("Fim da shell.\n");
 }
 int main(int argc, char** argv) {
+    signal(SIGINT, CtrlC);
     int pai= getpid();
     fork();
     if (getpid()!=pai){
@@ -131,6 +147,7 @@ int main(int argc, char** argv) {
                     trataWait();
                 }else{
                     filho = fork();
+                    PID_filho = filho;
                     int status;
                     int h = waitpid(filho,&status,WUNTRACED);
                 }
@@ -138,9 +155,11 @@ int main(int argc, char** argv) {
         
         if (filho==0){
             filho=getpid();
+            
             int a=0;
             neto = fork();                     
-            if (filho == getpid()){                          
+            if (filho == getpid()){ 
+                signal(SIGINT, SIG_IGN);                         
                 a = daExec(recebido,i);
                 
                 exit(0);
