@@ -27,12 +27,18 @@
  void CtrlC(int sig){
      signal(SIGINT, SIG_IGN);
      char c;
+     if ("%d",PID_filho);
+     if (PID_filho==0){
+         signal(SIGINT, CtrlC);
+         return;
+     }
      printf("Não adianta me enviar um sinal por Ctrl-c, não vou morrer! Você quer suspender meu filho que está rodando em foreground? s/n:\n");
      c = getchar();
      if (c == 'S' || c == 's'){
     //      printf("entrou aq");
         kill(PID_filho, SIGSTOP);
      }
+      signal(SIGINT, CtrlC);
  }
 
 void libera(char** recebido){
@@ -83,13 +89,12 @@ void trataWait(){
             printf("morreu de morte matada(signal)\n");
         }
     }
-    printf("Todos os filhos estao descançando em paz\n");
+    printf("Todos os filhos estão descançando em paz\n");
 }
 void trataExit(){
     int a;
     int status;
-    while (a=wait(&status)!=-1){
-        printf("%d",a);
+    while (a=wait(&status)!=-1){// espera todos os filho até terminarem
     }
     printf("Fim da shell.\n");
 }
@@ -113,6 +118,7 @@ int main(int argc, char** argv) {
     while (1) {
         if (pai==getpid()){
                 printf("ModoCrazyShell:");
+                PID_filho=0;
                 strcpy(recebido[0],"");
                 strcpy(recebido[1],"");
                 strcpy(recebido[2],"");
@@ -132,11 +138,9 @@ int main(int argc, char** argv) {
                         i++;
                         j=0;
                         scanf("%c",&c);
-                    }
-                    
+                    }                    
                 }
-                recebido[i][j]='\0';
-                
+                recebido[i][j]='\0';          
                 if (!strcmp(recebido[0],"exit")){
                    
                    trataExit();
@@ -160,8 +164,7 @@ int main(int argc, char** argv) {
             neto = fork();                     
             if (filho == getpid()){ 
                 signal(SIGINT, SIG_IGN);                         
-                a = daExec(recebido,i);
-                
+                a = daExec(recebido,i);               
                 exit(0);
             }
             
