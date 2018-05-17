@@ -34,11 +34,15 @@
      }
      printf("Não adianta me enviar um sinal por Ctrl-c, não vou morrer! Você quer suspender meu filho que está rodando em foreground? s/n:\n");
      c = getchar();
-     if (c == 'S' || c == 's'){
+     if (c == '\n' || c == 's'){
     //      printf("entrou aq");
         kill(PID_filho, SIGSTOP);
+        if (c=='s'){
+            getchar();
+        }
      }
-      signal(SIGINT, CtrlC);
+     
+     signal(SIGINT, CtrlC);
  }
 
 void libera(char** recebido){
@@ -172,9 +176,10 @@ int main(int argc, char** argv) {
         
         if (neto==0){
             int a;
-            if (setsid()==-1){
-                printf("o processo neto nao foi pra background");
-            }
+            daemon(0,0);
+           // if (setsid()==-1){
+             //   printf("o processo neto nao foi pra background");
+            //}
             a = daExec(recebido,i);
             
             exit(0);
