@@ -26,10 +26,15 @@
 
  void CtrlC(int sig){
      signal(SIGINT, SIG_IGN);
+     sigset_t mask;
+     sigfillset(&mask);
+     sigprocmask(SIG_SETMASK, &mask, NULL);
      char c;
      if ("%d",PID_filho);
      if (PID_filho==0){
          signal(SIGINT, CtrlC);
+         sigemptyset(&mask);
+         sigprocmask(SIG_SETMASK, &mask, NULL);
          return;
      }
      printf("Não adianta me enviar um sinal por Ctrl-c, não vou morrer! Você quer suspender meu filho que está rodando em foreground? s/n:\n");
@@ -37,6 +42,8 @@
      if (c == '\n' || c == 's'){
     //      printf("entrou aq");
         kill(PID_filho, SIGSTOP);
+        sigemptyset(&mask);
+        sigprocmask(SIG_SETMASK, &mask, NULL);
         if (c=='s'){
             getchar();
         }
