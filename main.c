@@ -42,14 +42,13 @@
      if (c == '\n' || c == 's'){
     //      printf("entrou aq");
         kill(PID_filho, SIGSTOP);
-        sigemptyset(&mask);
-        sigprocmask(SIG_SETMASK, &mask, NULL);
         if (c=='s'){
             getchar();
         }
      }
-     
-     signal(SIGINT, CtrlC);
+        sigemptyset(&mask);
+        sigprocmask(SIG_SETMASK, &mask, NULL);
+        signal(SIGINT, CtrlC);     
  }
 
 void libera(char** recebido){
@@ -184,10 +183,10 @@ int main(int argc, char** argv) {
         if (neto==0){
             int a;
             daemon(0,0);
-           // if (setsid()==-1){
-             //   printf("o processo neto nao foi pra background");
-            //}
-            a = daExec(recebido,i);
+           if (setsid()==-1){
+               printf("o processo neto nao foi pra background");
+            }
+            // a = daExec(recebido,i);
             
             exit(0);
 
