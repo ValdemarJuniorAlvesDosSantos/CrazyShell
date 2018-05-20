@@ -22,16 +22,16 @@
  *
  */
 
- int PID_filho = 0;
+ int PID_filho = 0; //pid do processo filho
 
- void CtrlC(int sig){
-     signal(SIGINT, SIG_IGN);
-     sigset_t mask;
+ void CtrlC(int sig){ //tratamento do Ctrl+C
+     signal(SIGINT, SIG_IGN); //ignora sinais
+     sigset_t mask; //máscara
      sigfillset(&mask);
      sigprocmask(SIG_SETMASK, &mask, NULL);
      char c;
      if ("%d",PID_filho);
-     if (PID_filho==0){
+     if (PID_filho==0){ //caso não haja filhos, retorna
          signal(SIGINT, CtrlC);
          sigemptyset(&mask);
          sigprocmask(SIG_SETMASK, &mask, NULL);
@@ -40,8 +40,7 @@
      printf("Não adianta me enviar um sinal por Ctrl-c, não vou morrer! Você quer suspender meu filho que está rodando em foreground? s/n:\n");
      c = getchar();
      if (c == '\n' || c == 's'){
-    //      printf("entrou aq");
-        kill(PID_filho, SIGSTOP);
+        kill(PID_filho, SIGSTOP); //suspende o filho
         if (c=='s'){
             getchar();
         }
@@ -51,14 +50,14 @@
         signal(SIGINT, CtrlC);     
  }
 
-void libera(char** recebido){
+void libera(char** recebido){ //libera alocação
     for (int o=0;o<6;o++){
         free(recebido[o]);
     }
     free(recebido);
 }
 
-int daExec(char** recebido,int b){
+int daExec(char** recebido,int b){ //executa um programa 
     switch (b){
         case 0:{
             execlp(recebido[0],recebido[0],NULL);
@@ -85,7 +84,7 @@ int daExec(char** recebido,int b){
     }
     
 }
-void trataWait(){
+void trataWait(){ //faz o tratamento do wait
     int status;
     int a;
     pid_t childpid;
@@ -101,13 +100,15 @@ void trataWait(){
     }
     printf("Todos os filhos estão descançando em paz\n");
 }
-void trataExit(){
+
+void trataExit(){ //trata o Exit
     int a;
     int status;
     while (a=wait(&status)!=-1){// espera todos os filho até terminarem
     }
-    printf("Fim da shell.\n");
+    printf("Fim da shell.\n"); //finaliza a CrazyShell
 }
+
 int main(int argc, char** argv) {
     signal(SIGINT, CtrlC);
     int pai= getpid();
@@ -182,11 +183,10 @@ int main(int argc, char** argv) {
         
         if (neto==0){
             int a;
-            daemon(0,0);
            if (setsid()==-1){
                printf("o processo neto nao foi pra background");
             }
-            // a = daExec(recebido,i);
+            a = daExec(recebido,i);
             
             exit(0);
 
